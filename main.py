@@ -4,7 +4,7 @@ from PySide6.QtGui import QFont
 import sys
 
 
-from pages.Dashboard import DashboardWidget                      #all imports are same basic pages, just to get the layout working. will be in the next commit.
+from pages.Dashboard import DashboardWidget                      
 from pages.licensee_management import LicenseeManagementWidget
 from pages.rhu_management import RHUManagementWidget
 from pages.allocation_space import AllocationWorkspaceWidget
