@@ -74,5 +74,20 @@ class licensee_management():
         return self.save_data()
     
     def update_licensee(self, prison_id, updated_data):
-        
+        idx = self.data[self.data['Prison_Role_ID'].astype(str) == str(prison_id)].index
+        if len(idx) > 0:
+                for key, value in updated_data.items():
+                    self.data.loc[idx[0], key] = value
+                return self.save_data()
+        return False
 
+    def get_licensee_by_id(self, prison_id):
+        result = self.data[self.data['Prison_Role_ID'].astype(str) == str(prison_id)]
+        if not result.empty:
+            return result.iloc[0].to_dict()
+        return None
+    def reload_data(self):
+        self.reload_data()
+    
+
+    
