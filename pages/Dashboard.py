@@ -3,11 +3,11 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 import pandas as pd
 from datetime import datetime, timedelta
-
+from Cost_management import CostManagement
 class Dashboard:
     def __init__(self):
         self.data = pd.read_csv('On_Licence_Housing_Data.csv')
-
+        self.cost_manage = CostManagement()
 
     def get_pending_allocation(self):
         pending = self.data[self.data['Current_Location'] == 'Congleton Hostel'].shape[0]
@@ -31,4 +31,5 @@ class Dashboard:
         return releaseday
     
     def get_daily_cost(self):
-        #pull from cost management when the code is done
+        total_cost = self.cost_manage.RMU_Costs()
+        return total_cost

@@ -27,5 +27,10 @@ class CostManagement():
         return total_cost
 
         
+    def get_cost_location(self, location):
+        self.location_costs.get(location, 0)
+
+    def location_costs(self):
+        return self.location_costs
     
     
