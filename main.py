@@ -44,6 +44,8 @@ class MainWindow(QMainWindow):
         self.allocation = AllocationWorkspaceWidget()
         self.release_mgmt = ReleaseManagementWidget()
         self.cost_mgmt = CostManagementWidget()
+        self.dashboard.logout.connect(QApplication.quit)   #logout button directly closes the program
+
        
         self.stacked_widget.addWidget(self.dashboard)          
         self.stacked_widget.addWidget(self.licensee_mgmt)    
