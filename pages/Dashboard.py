@@ -16,12 +16,12 @@ class Dashboard:
         self.cost_manage = CostManagement()
 
     def get_pending_allocation(self):
-        pending = self.data[self.data['Current_Location'] == 'Congleton Hostel'].shape[0]
+        pending = self.data[self.data['Status'] == 'Pending'].shape[0]
         return pending
     
 
     def get_currently_allocated(self):
-         allocated = self.data[self.data['Current_Location'].notna()].shape[0]
+         allocated = self.data[self.data['Status'] == 'Allocated'].shape[0]
          return allocated
     
     def get_month_released(self):
@@ -39,3 +39,5 @@ class Dashboard:
     def get_daily_cost(self):
         total_cost = self.cost_manage.RMU_Costs()
         return total_cost
+    
+    
