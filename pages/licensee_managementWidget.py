@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QLineEdit, QTableWidget, QTableWidgetItem, QMessageBox, QHeaderView)
 from PySide6.QtCore import Signal
 from PySide6.QtGui import QFont
-from .licensee_management import licensee_management
+from pages.licensee_management import licensee_management
 
 class LicenseeManagementWidget(QWidget):
     back_to_dashboard = Signal()
@@ -14,7 +14,7 @@ class LicenseeManagementWidget(QWidget):
         self.licenseeUI(self)
 
 
-    def licenseeUI(self):
+    def licenseeUI(self, *args):
             main_layout = QVBoxLayout()
             main_layout.setContentsMargins(20, 20, 20, 20)
             
@@ -112,7 +112,7 @@ class LicenseeManagementWidget(QWidget):
             self.setLayout(main_layout)
             
           
-            self.refreshdata()
+            
 
     def remove_licensee(self):
         selected_row = self.table.currentRow()
@@ -124,6 +124,29 @@ class LicenseeManagementWidget(QWidget):
                                     f"Are you sure you want to remove licensee {prison_id}?", QMessageBox.Yes | QMessageBox.No)
 
     def refreshdata(self):
-        self.licensee_mgmt.refresh_data()
-        data = self.licensee_mgmt.get_all_licensees()
+        self.licensee_mgmt.reload_data()
+        data = self.licensee_mgmt.all_licensees()
         self.populate_table(data)
+
+    def search_licensees(self):
+        search_text = self.search_input.text().strip()
+        filtered_data = self.licensee_mgmt.search_licensees(search_text)
+        self.populate_table(filtered_data)
+
+    def populate_table(self, data):
+        if data.empty:
+            self.table.setRowCount(0)
+            self.table.setColumnCount(0)
+            return
+        
+        self.table.setRowCount(len(data))
+        self.table.setColumnCount(len(data.columns))
+        self.table.setHorizontalHeaderLabels(data.columns.tolist())
+        
+        for row_idx, row in data.iterrows():
+            for col_idx, value in enumerate(row):
+                item = QTableWidgetItem(str(value))
+                self.table.setItem(row_idx, col_idx, item)
+
+    def add_licensee(self):
+        QMessageBox(self,'add info')
