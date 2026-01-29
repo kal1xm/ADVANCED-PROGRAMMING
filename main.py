@@ -4,12 +4,12 @@ from PySide6.QtGui import QFont
 import sys
 
 
-from pages.Dashboard import DashboardWidget                      
-from pages.licensee_management import LicenseeManagementWidget
-from pages.rhu_management import RHUManagementWidget
-from pages.allocation_space import AllocationWorkspaceWidget
-from pages.Release_management import ReleaseManagementWidget
-from pages.Cost_management import CostManagementWidget
+from pages.DashboardWidget import DashboardWidget                      
+from pages.licensee_managementWidget import LicenseeManagementWidget
+from pages.rhu_managementWidget import RHUManagementWidget
+from pages.allocation_spaceWidget import AllocationWorkspaceWidget
+from pages.Release_managementWidget import ReleaseManagementWidget
+from pages.Cost_managementWidget import CostManagementWidget
 
 
 
