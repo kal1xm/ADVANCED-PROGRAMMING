@@ -29,9 +29,7 @@ class LicenseeManagementWidget(QWidget):
         
         layout.addLayout(header)
         
-        info = QLabel("Licensee Management Content Goes Here")
-        info.setAlignment(Qt.AlignCenter)
-        layout.addWidget(info)
+        
         
         layout.addStretch()
         self.setLayout(layout)
