@@ -30,14 +30,49 @@ class licensee_management():
             return self.data
         
         filters = self.data[
-            self.data['Prison_Role_ID'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Name'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Male'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Women'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Category'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Release_Date'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Expected_End_of_License'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Current_Location'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Nighttime_Curfew_Restrictions'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Weekend_Curfew_Restrictions'].astype(str).str.lower().str.contains(SearchData, na=False),
-            self.data['Male'].astype(str).str.lower().str.contains(SearchData, na=False),
+        self.data['Prison_Role_ID'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Name'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Home_Address'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Gender'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Category'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Release_Date'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Expected_End_of_Licence'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Current_Location'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Nighttime_Curfew_Restrictions'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Weekend_Curfew_Restrictions'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Exclusion_Zone_Victims'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Exclusion_Zone_Schools'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Exclusion_Zone_Other_Prisoners'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['General_Exclusion_Zone'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Drug_Searches_Required'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Proximity_to_Codefendants'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Suitable_for_Young_Offenders'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Access_to_Medical_Services'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Transport_Links_Needed'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Cultural_Religious_Needs'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Mental_Health_Considerations'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Gender_Preference'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Access_to_Family'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Prior_RHU_Experience'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Employment_Training_Needs'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Specific_Offending_Triggers'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Period_of_Licence_Days'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Notes_Misc'].astype(str).str.lower().str.contains(SearchData, na=False) |
+        self.data['Status'].astype(str).str.lower().str.contains(SearchData, na=False)
+            ]
+        return filters
+    
+    def add_licensee(self, licensee_data):
+        new_row = pd.DataFrame([licensee_data])
+        self.data = pd.concat([self.data, new_row], ignore_index=True)
+        return self.save_data()
+    
+
+
+    def remove_licensee(self, prison_id):
+        self.data = self.data[self.data['Prison_Role_ID'].astype(str) != str(prison_id)]
+        return self.save_data()
+    
+    def update_licensee(self, prison_id, updated_data):
+        
+
