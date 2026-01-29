@@ -3,10 +3,16 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 import pandas as pd
 from datetime import datetime, timedelta
-from Cost_management import CostManagement
+from .Cost_management import CostManagement
+import os
+
+
+
+csv_path = os.path.join('On_Licence_Housing_Data.xlsx')
+
 class Dashboard:
     def __init__(self):
-        self.data = pd.read_csv('On_Licence_Housing_Data.csv')
+        self.data = pd.read_excel(csv_path)
         self.cost_manage = CostManagement()
 
     def get_pending_allocation(self):

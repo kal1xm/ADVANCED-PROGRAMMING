@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QGridLayout)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
+from .Dashboard import Dashboard
 
 class DashboardWidget(QWidget):
    
@@ -17,7 +18,7 @@ class DashboardWidget(QWidget):
         main_layout = QVBoxLayout()
         main_layout.setContentsMargins(20, 20, 20, 0)
         main_layout.setSpacing(20)
-        
+        self.dashboard = Dashboard()
        
         header_layout = QHBoxLayout()
         title = QLabel("On-Licence Housing Allocation System")
@@ -57,15 +58,20 @@ class DashboardWidget(QWidget):
         welcome.setStyleSheet("color: white;")
         main_layout.addWidget(welcome)
         
-       
+        self.pending_label = None
+        self.allocated_label = None
+        self.get_month_label = None
+        self.daily_cost_label = None
+
+
         stats_layout = QGridLayout()
         stats_layout.setSpacing(15)
         
         stats = [
-            ("Pending Allocation", "23", "#332d36", "#cc6600"),      
-            ("Currently Allocated", "87", "#332d36", "#cc6600"),     
-            ("Due Release (7 days)", "12", "#332d36", "#cc6600"),    
-            ("Daily Cost", "£3,240", "#332d36", "#cc6600")          
+            ("Pending Allocation", "", "#332d36", "#cc6600"),      
+            ("Currently Allocated", "", "#332d36", "#cc6600"),     
+            ("Due Release (1 month)", "", "#332d36", "#cc6600"),    
+            ("Daily Cost", "", "#332d36", "#cc6600")          
         ]
         
         for i, (label_text, value_text, bg_color, text_color) in enumerate(stats):
@@ -87,7 +93,16 @@ class DashboardWidget(QWidget):
             value_font.setBold(True)
             value_label.setFont(value_font)
             value_label.setStyleSheet(f"color: {text_color}; background-color: transparent;")
-            
+
+            if i == 0:
+                self.pending_label = value_label
+            elif i == 1:
+                self.allocated_label = value_label
+            elif i == 2:
+                self.get_month_label = value_label
+            elif i == 3:
+                self.daily_cost_label = value_label
+
             label = QLabel(label_text)
             label.setAlignment(Qt.AlignCenter)
             label_font = QFont()
@@ -113,3 +128,23 @@ class DashboardWidget(QWidget):
         self.setStyleSheet("background-color: #2d2d2d;")
         
         self.setLayout(main_layout)
+
+        self.update_metrics()
+
+    def update_metrics(self):
+        pending = self.dashboard.get_pending_allocation()
+        allocated = self.dashboard.get_currently_allocated()
+        due_release = self.dashboard.get_month_released()
+        daily_cost = self.dashboard.get_daily_cost()
+        print(f"Pending: {pending}")    #for debug, had an issue showing the correct values.
+        print(f"Allocated: {allocated}")
+        print(f"Due Release: {due_release}")
+        print(f"Daily Cost: {daily_cost}")
+        self.pending_label.setText(str(pending))
+        self.allocated_label.setText(str(allocated))
+        self.get_month_label.setText(str(due_release))
+        self.daily_cost_label.setText(f"£{daily_cost:,.0f}")
+
+        
+        
+        
