@@ -14,7 +14,7 @@ class rhu_management():
 
     def load_data(self):
         self.data = pd.read_excel(self.csv_path)
-
+                                                                                #all same code as other pages, used for searching and loading DB
     def all_rhus(self, SearchData):
         return self.RHU_DATA
 
@@ -22,7 +22,7 @@ class rhu_management():
         if not SearchData:
             return self.RHU_DATA
         
-        search_lower = SearchData.lower()
+        search_lower = SearchData.lower()           #search for the RHU
         filters = [
             rhu for rhu in self.RHU_DATA 
             if search_lower in rhu['name'].lower() or 
@@ -37,18 +37,18 @@ class rhu_management():
             return self.data
         
         filters1 = self.data[
-            self.data['Current_Location'].astype(str).str.lower().str.contains(SearchData.lower(), na=False)
+            self.data['Current_Location'].astype(str).str.lower().str.contains(SearchData.lower(), na=False)     #same as in lciensee management, can search the location via licensee
         ]
         return filters1
     
 
-    def is_rhu_full(self, rhu_name):
+    def is_rhu_full(self, rhu_name): 
         rhu = self.get_rhu_by_name(rhu_name)
         if rhu:
             return rhu['current_allocation'] >= rhu['capacity']
         return False
     
-    
+
 
 
 
@@ -65,8 +65,43 @@ class rhu_management():
         
 
 
+    def get_rhu_by_name(self, rhu_name):
+        for rhu in self.RHU_DATA:
+            if rhu['name'] == rhu_name:
+                return rhu
+        return None
+    
+    def is_rhu_full(self, rhu_name):        #checking if RHU is at max capacity
+        rhu = self.get_rhu_by_name(rhu_name)
+        if rhu:
+            return rhu['current_allocation'] >= rhu['capacity']
+        return False
 
 
+    def get_licensees_in_rhu(self, rhu_name):      #displaying licensees in the RHU
+        if 'RHU_Name' in self.data.columns:
+            rhu_prisoners = self.data[self.data['RHU_Name'] == rhu_name]
+        elif 'Location' in self.data.columns:
+            rhu_prisoners = self.data[self.data['Location'] == rhu_name]
+        elif 'Current_Location' in self.data.columns:
+            rhu_prisoners = self.data[self.data['Current_Location'] == rhu_name]
+        else:
+            return []
+        
+        prisoners = []
+        if not rhu_prisoners.empty:
+            if 'Name' in rhu_prisoners.columns and 'Prison_Role_ID' in rhu_prisoners.columns:
+                prisoners = [
+                    f"{row['Name']} - ID: {row['Prison_Role_ID']}" 
+                    for _, row in rhu_prisoners.iterrows()
+                ]
+            elif 'Prisoner_Name' in rhu_prisoners.columns:
+                prisoners = rhu_prisoners['Prisoner_Name'].tolist()
+        
+        return prisoners
+    
+    def reload_data(self):
+        self.load_data()
 
 
 
