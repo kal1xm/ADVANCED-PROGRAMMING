@@ -124,7 +124,6 @@ class LicenseeManagementWidget(QWidget):
                                     f"Are you sure you want to remove licensee {prison_id}?", QMessageBox.Yes | QMessageBox.No)
 
     def refreshdata(self):
-        self.licensee_mgmt.reload_data()
         data = self.licensee_mgmt.all_licensees()
         self.populate_table(data)
 
