@@ -18,11 +18,39 @@ class rhu_management():
     def all_rhus(self, SearchData):
         return self.RHU_DATA
 
-    def Search_rhus(self, SearchData):   
-        filters =self.data[
-             self.data['Current_Location'].astype(str).str.lower().str.contains(SearchData, na=False)
+    def Search_rhus(self, SearchData):
+        if not SearchData:
+            return self.RHU_DATA
+        
+        search_lower = SearchData.lower()
+        filters = [
+            rhu for rhu in self.RHU_DATA 
+            if search_lower in rhu['name'].lower() or 
+               any(search_lower in conflict.lower() for conflict in rhu['conflicts'])
         ]
         return filters
+
+
+
+    def Search_licensees_by_location(self, SearchData):
+        if not SearchData:
+            return self.data
+        
+        filters1 = self.data[
+            self.data['Current_Location'].astype(str).str.lower().str.contains(SearchData.lower(), na=False)
+        ]
+        return filters1
+    
+
+    def is_rhu_full(self, rhu_name):
+        rhu = self.get_rhu_by_name(rhu_name)
+        if rhu:
+            return rhu['current_allocation'] >= rhu['capacity']
+        return False
+    
+    
+
+
 
     def add_rhu(self, RHU_DATA):
         self.RHU_DATA.append(RHU_DATA)
