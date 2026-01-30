@@ -18,7 +18,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("On-Licence Housing Allocation System")
-        self.setMinimumSize(1200, 800)
+        self.setMinimumSize(1800, 1200)
         
       
         central_widget = QWidget()

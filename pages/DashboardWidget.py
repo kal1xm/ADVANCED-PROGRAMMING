@@ -26,8 +26,9 @@ class DashboardWidget(QWidget):
         title_font.setPointSize(18)
         title_font.setBold(True)
         title.setFont(title_font)
-        title.setStyleSheet("color: white;")
+        title.setStyleSheet("color: white; background-color: #000000;")
         header_layout.addWidget(title)
+
         
         logout_btn = QPushButton("Logout")
         logout_btn.setMaximumWidth(120)
@@ -68,10 +69,10 @@ class DashboardWidget(QWidget):
         stats_layout.setSpacing(15)
         
         stats = [
-            ("Pending Allocation", "", "#332d36", "#cc6600"),      
-            ("Currently Allocated", "", "#332d36", "#cc6600"),     
-            ("Due Release (1 month)", "", "#332d36", "#cc6600"),    
-            ("Daily Cost", "", "#332d36", "#cc6600")          
+            ("Pending Allocation", "", "#000000", "#cc6600"),      
+            ("Currently Allocated", "", "#000000", "#cc6600"),     
+            ("Due Release (1 month)", "", "#000000", "#cc6600"),    
+            ("Daily Cost", "", "#000000", "#cc6600")          
         ]
         
         for i, (label_text, value_text, bg_color, text_color) in enumerate(stats):
@@ -81,7 +82,7 @@ class DashboardWidget(QWidget):
             stat_widget.setStyleSheet(f"""
                 QWidget {{
                     background-color: {bg_color};
-                    border: 2px solid #cccccc;
+                    border: 2px solid #000000;
                     border-radius: 10px;
                 }}
             """)
