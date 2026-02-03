@@ -95,7 +95,7 @@ class rhu_management():
         if not SearchData:
             return self.RHU_DATA
         
-        search_lower = SearchData.lower()           #search for the RHU
+        search_lower = SearchData.lower()               #search for the RHU
         filters = [
             rhu for rhu in self.RHU_DATA 
             if search_lower in rhu['name'].lower() or 
@@ -153,7 +153,7 @@ class rhu_management():
 
     def get_licensees_in_rhu(self, rhu_name):      #displaying licensees in the RHU
         if 'RHU_Name' in self.data.columns:
-            rhu_prisoners = self.data[self.data['RHU_Name'] == rhu_name]
+            rhu_prisoners = self.data[self.data['RHU_Name'] == rhu_name]   #searching and comparing columbs
         elif 'Location' in self.data.columns:
             rhu_prisoners = self.data[self.data['Location'] == rhu_name]
         elif 'Current_Location' in self.data.columns:
@@ -163,13 +163,13 @@ class rhu_management():
         
         prisoners = []
         if not rhu_prisoners.empty:
-            if 'Name' in rhu_prisoners.columns and 'Prison_Role_ID' in rhu_prisoners.columns:
+            if 'Name' in rhu_prisoners.columns and 'Prison_Role_ID' in rhu_prisoners.columns:   #takes name and ID from DB
                 prisoners = [
                     f"{row['Name']} - ID: {row['Prison_Role_ID']}" 
                     for _, row in rhu_prisoners.iterrows()
                 ]
             elif 'Prisoner_Name' in rhu_prisoners.columns:
-                prisoners = rhu_prisoners['Prisoner_Name'].tolist()
+                prisoners = rhu_prisoners['Prisoner_Name'].tolist() #converting array to same list
         
         return prisoners
     
