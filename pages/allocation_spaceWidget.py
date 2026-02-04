@@ -1,12 +1,14 @@
-from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QScrollArea)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, 
+                               QTableWidget, QTableWidgetItem, QHeaderView, QFrame, QLineEdit)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
+import pandas as pd
+import os
 
 class AllocationSpaceWidget(QWidget):
     back_to_dashboard = Signal()
     logout = Signal()
-    view_details_clicked = Signal(str)  
-    allocate_clicked = Signal(str)  
+    licensee_selected = Signal(dict)
     
     def __init__(self):
         super().__init__()
@@ -18,7 +20,6 @@ class AllocationSpaceWidget(QWidget):
         main_layout.setSpacing(0)
         
         header = self.create_header()
-
         content = self.create_content()
         
         main_layout.addWidget(header)
@@ -28,7 +29,6 @@ class AllocationSpaceWidget(QWidget):
         self.setStyleSheet("background-color: #1a1a1a;")
         
     def create_header(self):
-        """Create the top header with title and buttons"""
         header = QFrame()
         header.setStyleSheet("""
             QFrame {
@@ -71,6 +71,7 @@ class AllocationSpaceWidget(QWidget):
             font-weight: bold;
         """)
         center_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
         logout_btn = QPushButton("Logout")
         logout_btn.setStyleSheet("""
             QPushButton {
@@ -100,13 +101,12 @@ class AllocationSpaceWidget(QWidget):
         return header
         
     def create_content(self):
-        """Create the main content area"""
         content = QFrame()
         content.setStyleSheet("background-color: #1a1a1a;")
         
         layout = QVBoxLayout()
         layout.setContentsMargins(40, 40, 40, 40)
-        layout.setSpacing(30)
+        layout.setSpacing(20)
         
         page_title = QLabel("Prisoner Allocation")
         page_title.setStyleSheet("""
@@ -115,16 +115,99 @@ class AllocationSpaceWidget(QWidget):
             font-weight: bold;
         """)
         
-        self.info_section = self.create_info_section()
+        search_layout = QHBoxLayout()
+        search_label = QLabel("Search:")
+        search_label.setStyleSheet("color: white; font-size: 14px;")
         
-        matches_label = QLabel("Best matches shown:")
-        matches_label.setStyleSheet("""
+        self.search_input = QLineEdit()
+        self.search_input.setPlaceholderText("Enter any column to search")
+        self.search_input.setMinimumHeight(35)
+        self.search_input.setStyleSheet("""
+            QLineEdit {
+                background-color: #2b2b2b;
+                color: white;
+                border: 1px solid #3a3a3a;
+                padding: 5px;
+                border-radius: 4px;
+            }
+        """)
+        
+        self.search_btn = QPushButton("Search")
+        self.search_btn.setMinimumHeight(35)
+        self.search_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4a9eff;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 10px 20px;
+            }
+            QPushButton:hover {
+                background-color: #6bb3ff;
+            }
+        """)
+        
+        self.refresh_btn = QPushButton("Refresh")
+        self.refresh_btn.setMinimumHeight(35)
+        self.refresh_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4d4d4d;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                padding: 10px 20px;
+            }
+            QPushButton:hover {
+                background-color: #5d5d5d;
+            }
+        """)
+        
+        search_layout.addWidget(search_label)
+        search_layout.addWidget(self.search_input)
+        search_layout.addWidget(self.search_btn)
+        search_layout.addWidget(self.refresh_btn)
+        
+        instruction_label = QLabel("Select a licensee from the table below:")
+        instruction_label.setStyleSheet("""
+            color: white;
+            font-size: 16px;
+            margin-top: 10px;
+        """)
+        
+        self.licensee_table = QTableWidget()
+        self.licensee_table.setStyleSheet("""
+            QTableWidget {
+                background-color: #3d3d3d;
+                color: white;
+                gridline-color: #555555;
+                border: 1px solid #555555;
+            }
+            QHeaderView::section {
+                background-color: #4d4d4d;
+                color: white;
+                padding: 5px;
+                border: 1px solid #555555;
+                font-weight: bold;
+            }
+            QTableWidget::item {
+                padding: 5px;
+            }
+            QTableWidget::item:selected {
+                background-color: #4a9eff;
+            }
+        """)
+        self.licensee_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+        self.licensee_table.setSelectionMode(QTableWidget.SelectionMode.SingleSelection)
+        self.licensee_table.itemSelectionChanged.connect(self.on_licensee_selected)
+        
+        self.selected_info_label = QLabel("No licensee selected")
+        self.selected_info_label.setStyleSheet("""
             color: white;
             font-size: 18px;
             font-weight: bold;
             margin-top: 20px;
         """)
-
+        
         ranked_label = QLabel("Ranked RHUs:")
         ranked_label.setStyleSheet("""
             color: white;
@@ -133,62 +216,59 @@ class AllocationSpaceWidget(QWidget):
             margin-top: 10px;
         """)
         
-
-        scroll = QScrollArea()
-        scroll.setWidgetResizable(True)
-        scroll.setStyleSheet("""
-            QScrollArea {
-                background-color: transparent;
-                border: none;
-            }
-        """)
-        
         self.rhu_list_widget = QWidget()
         self.rhu_list_layout = QVBoxLayout()
         self.rhu_list_layout.setSpacing(20)
         self.rhu_list_widget.setLayout(self.rhu_list_layout)
         
-        scroll.setWidget(self.rhu_list_widget)
-        
         layout.addWidget(page_title)
-        layout.addWidget(self.info_section)
-        layout.addWidget(matches_label)
+        layout.addLayout(search_layout)
+        layout.addWidget(instruction_label)
+        layout.addWidget(self.licensee_table)
+        layout.addWidget(self.selected_info_label)
         layout.addWidget(ranked_label)
-        layout.addWidget(scroll)
+        layout.addWidget(self.rhu_list_widget)
         layout.addStretch()
         
         content.setLayout(layout)
         return content
+    
+    def populate_table(self, data):
+        if data.empty:
+            self.licensee_table.setRowCount(0)
+            self.licensee_table.setColumnCount(0)
+            return
         
-    def create_info_section(self):
-        section = QFrame()
-        section.setStyleSheet("""
-            QFrame {
-                background-color: transparent;
-            }
-        """)
+        self.licensee_table.setRowCount(len(data))
+        self.licensee_table.setColumnCount(len(data.columns))
+        self.licensee_table.setHorizontalHeaderLabels(data.columns.tolist())
         
-        layout = QVBoxLayout()
-        layout.setSpacing(10)
+        for row_idx, row in data.iterrows():
+            for col_idx, value in enumerate(row):
+                item = QTableWidgetItem(str(value))
+                self.licensee_table.setItem(row_idx, col_idx, item)
         
-        self.licensee_label = QLabel("Selected licensee: _____")
-        self.licensee_label.setStyleSheet("""
-            color: white;
-            font-size: 16px;
-        """)
+        self.licensee_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+    
+    def on_licensee_selected(self):
+        selected_row = self.licensee_table.currentRow()
+        if selected_row < 0:
+            return
         
-        self.release_label = QLabel("release: _ (needs curfew?) (sex offender, etc)")
-        self.release_label.setStyleSheet("""
-            color: #aaa;
-            font-size: 14px;
-        """)
+        licensee_data = {}
         
-        layout.addWidget(self.licensee_label)
-        layout.addWidget(self.release_label)
+        for col in range(self.licensee_table.columnCount()):
+            header = self.licensee_table.horizontalHeaderItem(col).text()
+            item = self.licensee_table.item(selected_row, col)
+            if item:
+                licensee_data[header] = item.text()
         
-        section.setLayout(layout)
-        return section
+        name = licensee_data.get('Name', 'Unknown')
+        release = licensee_data.get('Release_Date', 'Unknown')
+        self.selected_info_label.setText(f"Selected: {name} - Release: {release}")
         
+        self.licensee_selected.emit(licensee_data)
+    
     def create_rhu_card(self, rank, rhu_data, available_capacity, conflicts, conflict_level, is_full=False):
         card = QFrame()
         card.setStyleSheet("""
@@ -203,7 +283,7 @@ class AllocationSpaceWidget(QWidget):
         layout = QVBoxLayout()
         layout.setSpacing(10)
         
-        rank_name = QLabel(f"{rank} {rhu_data['name']}")
+        rank_name = QLabel(f"{rank}. {rhu_data['name']}")
         rank_name.setStyleSheet("""
             color: white;
             font-size: 18px;
@@ -235,88 +315,20 @@ class AllocationSpaceWidget(QWidget):
                 font-size: 14px;
             """)
         
-        button_layout = QHBoxLayout()
-        
-        view_details_btn = QPushButton("View Details")
-        view_details_btn.setStyleSheet("""
-            QPushButton {
-                background-color: transparent;
-                color: #4a9eff;
-                border: none;
-                padding: 5px;
-                text-align: left;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                color: #6bb3ff;
-                text-decoration: underline;
-            }
-        """)
-        view_details_btn.clicked.connect(lambda: self.view_details_clicked.emit(rhu_data['name']))
-        
-        if is_full:
-            allocate_btn = QPushButton("Cannot Allocate - Full")
-            allocate_btn.setEnabled(False)
-            allocate_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: transparent;
-                    color: #ff3b30;
-                    border: none;
-                    padding: 5px;
-                    text-align: left;
-                    font-size: 14px;
-                }
-            """)
-        else:
-            allocate_btn = QPushButton("Allocate to This RHU")
-            allocate_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: transparent;
-                    color: #4a9eff;
-                    border: none;
-                    padding: 5px;
-                    text-align: left;
-                    font-size: 14px;
-                }
-                QPushButton:hover {
-                    color: #6bb3ff;
-                    text-decoration: underline;
-                }
-            """)
-            allocate_btn.clicked.connect(lambda: self.allocate_clicked.emit(rhu_data['name']))
-        
-        button_layout.addWidget(view_details_btn)
-        button_layout.addWidget(allocate_btn)
-        button_layout.addStretch()
-        
         layout.addWidget(rank_name)
         layout.addWidget(cost_capacity)
         layout.addWidget(conflicts_label)
-        layout.addLayout(button_layout)
         
         card.setLayout(layout)
         return card
-        
-    def update_licensee_info(self, name, release_date, flags):
-        if name:
-            self.licensee_label.setText(f"Selected licensee: {name}")
-            
-            release_text = f"release: {release_date}"
-            if flags:
-                release_text += f" ({', '.join(flags)})"
-            
-            self.release_label.setText(release_text)
-        else:
-            self.licensee_label.setText("Selected licensee: _____")
-            self.release_label.setText("release: _ (licensee requirements")
-            
+    
     def display_ranked_rhus(self, ranked_rhus):
         while self.rhu_list_layout.count():
             child = self.rhu_list_layout.takeAt(0)
             if child.widget():
                 child.widget().deleteLater()
         
-        for item in ranked_rhus:
+        for item in ranked_rhus[:3]:
             card = self.create_rhu_card(
                 item['rank'],
                 item['rhu'],

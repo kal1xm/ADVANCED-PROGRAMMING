@@ -149,9 +149,6 @@ class CostManagementWidget(QWidget):
         main_layout.addWidget(self.last_payment_label)
         main_layout.addWidget(self.next_payment_label)
         
-        back_btn = QPushButton("← Back to Dashboard")
-        back_btn.clicked.connect(self.back_to_dashboard_signal.emit)
-        main_layout.addWidget(back_btn)
         
         main_layout.addStretch()
         
