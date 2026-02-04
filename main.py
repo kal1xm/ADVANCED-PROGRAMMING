@@ -7,7 +7,7 @@ import sys
 from pages.DashboardWidget import DashboardWidget                      
 from pages.licensee_managementWidget import LicenseeManagementWidget
 from pages.rhu_managementWidget import RHUManagementWidget
-from pages.allocation_spaceWidget import AllocationWorkspaceWidget
+from pages.allocation_spaceWidget import AllocationSpaceWidget
 from pages.Release_managementWidget import ReleaseManagementWidget
 from pages.Cost_managementWidget import CostManagementWidget
 
@@ -41,7 +41,7 @@ class MainWindow(QMainWindow):
         self.dashboard = DashboardWidget()
         self.licensee_mgmt = LicenseeManagementWidget()
         self.rhu_mgmt = RHUManagementWidget()
-        self.allocation = AllocationWorkspaceWidget()
+        self.allocation = AllocationSpaceWidget()
         self.release_mgmt = ReleaseManagementWidget()
         self.cost_mgmt = CostManagementWidget()
         self.dashboard.logout.connect(QApplication.quit)   #logout button directly closes the program
