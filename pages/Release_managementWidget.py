@@ -295,28 +295,12 @@ class ReleaseManagementWidget(QWidget):
             }
         """)
         refresh_btn.clicked.connect(self.refresh_data)
-        
-        more_btn = QPushButton("More.....")
-        more_btn.setMinimumHeight(40)
-        more_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #4d4d4d;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 5px 15px;
-            }
-            QPushButton:hover {
-                background-color: #5d5d5d;
-            }
-        """)
-        more_btn.clicked.connect(self.load_more)
+
         
         button_layout.addWidget(view_info_btn)
         button_layout.addWidget(update_date_btn)
         button_layout.addWidget(contact_rhu_btn)
         button_layout.addWidget(refresh_btn)
-        button_layout.addWidget(more_btn)
         button_layout.addStretch()
         
         main_layout.addLayout(button_layout)
