@@ -1,4 +1,4 @@
-#kallumleew24023993
+#w24023993kallumlee
 from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel,  QPushButton, QLineEdit, QListWidget, QFrame, QScrollArea, QListWidgetItem)
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
@@ -270,7 +270,7 @@ class RHUManagementWidget(QWidget):
             item = self.rhu_list.item(i)
             item.setHidden(text.lower() not in item.text().lower())
             
-    def add_rhu_list(self, rhu_names):
+    def populate_rhu_list(self, rhu_names):
         self.rhu_list.clear()
         for name in rhu_names:
             self.rhu_list.addItem(name)

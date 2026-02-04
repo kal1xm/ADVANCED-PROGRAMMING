@@ -7,11 +7,10 @@ import sys
 
 from pages.DashboardWidget import DashboardWidget                      
 from pages.licensee_managementWidget import LicenseeManagementWidget
-from pages.rhu_managementWidget import RHUManagementWidget
+from pages.rhu_management import RHUManagement
 from pages.allocation_space import AllocationSpace
 from pages.Release_managementWidget import ReleaseManagementWidget
 from pages.Cost_managementWidget import CostManagementWidget
-
 
 
 class MainWindow(QMainWindow):
@@ -41,7 +40,7 @@ class MainWindow(QMainWindow):
        
         self.dashboard = DashboardWidget()
         self.licensee_mgmt = LicenseeManagementWidget()
-        self.rhu_mgmt = RHUManagementWidget()
+        self.rhu_mgmt = RHUManagement()
         self.allocation = AllocationSpace()
         self.release_mgmt = ReleaseManagementWidget()
         self.cost_mgmt = CostManagementWidget(self.dashboard.dashboard.cost_manage)

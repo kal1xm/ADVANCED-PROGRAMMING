@@ -1,10 +1,11 @@
 #kallumleew24023993
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel, QHBoxLayout, QPushButton, QMessageBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 import pandas as pd
 from datetime import datetime, timedelta
 import os
+from pages.rhu_managementWidget import RHUManagementWidget
 
 csv_path = os.path.join('On_Licence_Housing_Data.xlsx')
 
@@ -14,7 +15,7 @@ csv_path = os.path.join('On_Licence_Housing_Data.xlsx')
 
 RHU_DATA = [
     {
-        'name': 'Wolverine House',
+        'name': 'Wolverine house',
         'cost_per_day': 58,
         'capacity': 1500,
         'current_allocation': 0,
@@ -44,7 +45,7 @@ RHU_DATA = [
         'conflicts': []
     },
     {
-        'name': 'Northumbria Facility',
+        'name': 'Northumbria facility',
         'cost_per_day': 72,
         'capacity': 2000,
         'current_allocation': 0,
@@ -87,7 +88,7 @@ class rhu_management():
         self.RHU_DATA = RHU_DATA
 
     def load_data(self):
-        self.data = pd.read_excel(self.csv_path)
+        self.data = pd.read_excel(csv_path)
                                                                                 #all same code as other pages, used for searching and loading DB
     def all_rhus(self):
         return self.RHU_DATA
@@ -103,8 +104,6 @@ class rhu_management():
                any(search_lower in conflict.lower() for conflict in rhu['conflicts'])
         ]
         return filters
-
-
 
     def Search_licensees_by_location(self, SearchData):
         if not SearchData:
@@ -122,18 +121,12 @@ class rhu_management():
             return rhu['current_allocation'] >= rhu['capacity']
         return False
     
-
-
-
-
-    def add_rhu(self, RHU_DATA):
-        self.RHU_DATA.append(RHU_DATA)
         
     def update_rhu(self, rhu_name, updated_data):
-        for i, rhu in enumerate(self.rhu_data):
+        for i, rhu in enumerate(self.RHU_DATA):
             if rhu['name'] == rhu_name:
                 for key, value in updated_data.items():
-                    self.rhu_data[i][key] = value
+                    self.RHU_DATA[i][key] = value
                 return True
         return False
         
@@ -144,12 +137,6 @@ class rhu_management():
             if rhu['name'] == rhu_name:
                 return rhu
         return None
-    
-    def is_rhu_full(self, rhu_name):        #checking if RHU is at max capacity
-        rhu = self.get_rhu_by_name(rhu_name)
-        if rhu:
-            return rhu['current_allocation'] >= rhu['capacity']
-        return False
 
 
     def get_licensees_in_rhu(self, rhu_name):      #displaying licensees in the RHU
@@ -173,9 +160,62 @@ class rhu_management():
                 prisoners = rhu_prisoners['Prisoner_Name'].tolist() #converting array to same list
         
         return prisoners
-    
+
     def reload_data(self):
         self.load_data()
 
 
-
+class RHUManagement(QWidget):
+    back_to_dashboard = Signal()
+    logout = Signal()
+    
+    def __init__(self):
+        super().__init__()
+        self.rhu_mgmt = rhu_management() 
+        self.RHU_UI()
+        
+    def RHU_UI(self):
+        layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        
+        self.rhu_widget = RHUManagementWidget()
+        
+        self.rhu_widget.logout.connect(self.logout.emit)
+        self.rhu_widget.rhu_selected.connect(self.handle_rhu_selected)
+        
+        layout.addWidget(self.rhu_widget)
+        self.setLayout(layout)
+        
+        self.load_rhus()
+        
+    
+        
+    def load_rhus(self):
+        try:
+            rhus = self.rhu_mgmt.all_rhus()
+            rhu_names = [rhu['name'] for rhu in rhus]
+            self.rhu_widget.populate_rhu_list(rhu_names)
+        except Exception as e:
+            print(f"Error loading RHUs: {e}")
+    
+    def handle_rhu_selected(self, rhu_name):
+        try:
+            rhu_data = self.rhu_mgmt.get_rhu_by_name(rhu_name)
+            if not rhu_data:
+                return
+            
+            prisoners = self.rhu_mgmt.get_licensees_in_rhu(rhu_name)
+            rhu_data['current_allocation'] = len(prisoners)
+            is_full = self.rhu_mgmt.is_rhu_full(rhu_name)
+            
+            self.rhu_widget.update_rhu_details(
+                rhu_data['name'],
+                rhu_data['cost_per_day'],
+                rhu_data['capacity'],
+                rhu_data['current_allocation'],
+                rhu_data['conflicts'],
+                prisoners,
+                is_full
+            )
+        except Exception as e:
+            print(f"Error: {e}")
