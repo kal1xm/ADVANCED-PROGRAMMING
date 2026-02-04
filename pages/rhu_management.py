@@ -89,7 +89,7 @@ class rhu_management():
     def load_data(self):
         self.data = pd.read_excel(self.csv_path)
                                                                                 #all same code as other pages, used for searching and loading DB
-    def all_rhus(self, SearchData):
+    def all_rhus(self):
         return self.RHU_DATA
 
     def Search_rhus(self, SearchData):
