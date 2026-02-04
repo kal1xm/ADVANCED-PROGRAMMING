@@ -43,12 +43,11 @@ class MainWindow(QMainWindow):
         self.rhu_mgmt = RHUManagementWidget()
         self.allocation = AllocationSpaceWidget()
         self.release_mgmt = ReleaseManagementWidget()
-        self.cost_mgmt = CostManagementWidget()
+        self.cost_mgmt = CostManagementWidget(self.dashboard.dashboard.cost_manage)
         self.dashboard.logout.connect(QApplication.quit)   #logout button directly closes the program
         self.licensee_mgmt.logout.connect(QApplication.quit)
         self.rhu_mgmt.logout.connect(QApplication.quit)
         self.allocation.logout.connect(QApplication.quit)
-        self.cost_mgmt.logout.connect(QApplication.quit)
         self.stacked_widget.addWidget(self.dashboard)          
         self.stacked_widget.addWidget(self.licensee_mgmt)    
         self.stacked_widget.addWidget(self.rhu_mgmt)           

@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QFont
 import pandas as pd
 from datetime import datetime, timedelta
-from .Cost_management import CostManagement
+from pages.Cost_management import CostManagement
 import os
 
 
